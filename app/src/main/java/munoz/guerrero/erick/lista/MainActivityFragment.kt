@@ -15,7 +15,7 @@ import java.util.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class MainActivityFragment : Fragment(),AdapterView.OnItemClickListener ,SeekBar.OnSeekBarChangeListener, TextToSpeech.OnInitListener {
+class MainActivityFragment : Fragment(),AdapterView.OnItemClickListener ,SeekBar.OnSeekBarChangeListener, TextToSpeech.OnInitListener{
     var tts : TextToSpeech? = null
     var progreso: Int? = null
     var adaptador: ArrayAdapter<String>? = null
@@ -28,13 +28,15 @@ class MainActivityFragment : Fragment(),AdapterView.OnItemClickListener ,SeekBar
         val vistaRaiz = inflater.inflate(R.layout.fragment_main, container, false)
 
         val seek = vistaRaiz.findViewById<SeekBar>(R.id.seekBar) as SeekBar
+        tts = TextToSpeech(context,this)
+        Log.i("Languages",Locale.getAvailableLocales().toString())
 
         progreso = seek.progress //3
 
         seek.setOnSeekBarChangeListener(this)
 
         listView = vistaRaiz.findViewById<ListView>(R.id.listView) as ListView
-
+        listView!!.setOnItemClickListener(this)
 
         calculaTablas(progreso!!)
 
@@ -57,8 +59,6 @@ class MainActivityFragment : Fragment(),AdapterView.OnItemClickListener ,SeekBar
     }
 
     override fun onInit(status: Int) {
-        tts = TextToSpeech(context,this)
-        Log.i("Languages",Locale.getAvailableLocales().toString())
         if (status == TextToSpeech.SUCCESS){
             val result = tts!!.setLanguage(Locale("es_MX"))
             if (result != TextToSpeech.LANG_NOT_SUPPORTED || result != TextToSpeech.LANG_MISSING_DATA){
@@ -81,7 +81,7 @@ class MainActivityFragment : Fragment(),AdapterView.OnItemClickListener ,SeekBar
 
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        listView!!.setOnItemClickListener(this)
+
         var texto = elementos.get(position)!!.replace("*"," por ")
         Toast.makeText(context,"presionado",Toast.LENGTH_SHORT).show()
         tts!!.speak(texto,TextToSpeech.QUEUE_FLUSH,null,null)
